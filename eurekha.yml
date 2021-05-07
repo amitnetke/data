@@ -1,0 +1,45 @@
+
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: eurekaserver
+  labels:
+    name: eurekaserver
+spec:
+  selector:
+    matchLabels:
+      app: eurekaserver
+#  replicas: 2 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        app: eurekaserver
+    spec:
+      containers:
+      - name: eurekaserver
+        image: eurekaserver:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8761
+#      nodeName: ze48-v-cdpdtst7
+      hostNetwork: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eurekaserver
+  labels:
+    name: eurekaserver
+    app: eurekaserver
+spec:
+  ports:
+  - name: http
+    port: 8761
+    protocol: TCP
+#    nodePort: 32554
+    targetPort: 8761
+  selector:
+    app: eurekaserver
+  type: LoadBalancer
+  loadBalancerIP: 10.42.216.11
